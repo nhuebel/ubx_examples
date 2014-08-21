@@ -5,8 +5,7 @@ return block
       port_cache=true,
 
       types = {
-	 { name="vector", class='struct' }, -- Enum will follow once implemented in C
-	 { name="value", class='struct' }
+	 { name="value", class='struct' },
       },
 
       configurations= {
@@ -14,7 +13,7 @@ return block
       },
 
       ports = {
-	 { name="change", in_type_name="vector", in_data_len=1, doc="cahnge of the stored value" },
+	 { name="change", in_type_name="vector", in_data_len=1, doc="change of the stored value" },
 	 { name="value", out_type_name="value", doc="current value of the random walk" },
       },
       

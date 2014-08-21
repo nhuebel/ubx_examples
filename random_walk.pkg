@@ -9,15 +9,14 @@ return pkg
 
   types = {
 -- define the data type you want to share, e.g. a struct cpp_data
-    { name="vector", dir="types" },
     { name="distribution", dir="types" },
     { name="value", dir="types" },
   },
 
   blocks = {
 -- define the blocks of your package, e.g. a sender and a receiver block
-    { name="store_value", file="random_walk_iblock.lua", src_dir="src" },
-    { name="modify_value", file="random_walk_cblock.lua", src_dir="src" },
+    { name="store_value", file="random_walk_iblock.blx", src_dir="src" },
+    { name="modify_value", file="random_walk_cblock.blx", src_dir="src" },
   },
 
   libraries = {

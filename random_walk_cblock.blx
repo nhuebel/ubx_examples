@@ -5,12 +5,12 @@ return block
       port_cache=true,
 
       types = {
-	 { name="vector", class='struct' }, -- Enum will follow once implemented in C
+	 { name="value", class='struct' }, -- Enum will follow once implemented in C
 	 { name="distribution", class='struct' },
       },
 
       configurations= {
-	 { name="distribution", type_name="double", len=5 },
+	 { name="distribution", type_name="double", len=1 },
       },
 
       ports = {
