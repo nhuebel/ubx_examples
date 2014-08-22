@@ -1,2 +1,14 @@
+#ignoring the eclipse project files
 .cproject
 .project
+
+#ignore temporary files 
+*.*~
+
+#the wiki lives in its own (sub)repository and is managed there
+/wiki
+
+#ignore all the cmake stuff because it can be recrated with the lua scripts
+*/CMakeLists.txt
+*/build/*
+*/cmake/*
