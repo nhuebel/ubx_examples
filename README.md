@@ -18,9 +18,6 @@ Generating a package
 git clone https://github.com/nhuebel/ubx_random_walk.git
 ```
 
-
-**The rest of this document is still under construction**
-
 ### Create a model description for the ubx package. The package contains a set of blocks and types, required in your application.
 
 ```sh
@@ -30,27 +27,19 @@ return pkg
   name="random_walk",
   path="../",
 
-  dependencies = {
--- no dependencies...
-  },
-
   types = {
--- define the data type you want to share, e.g. a struct cpp_data
-    { name="vector", dir="types" },
-    { name="distribution", dir="types" },
-    { name="value", dir="types" },
+    { name="distribution_name", dir="types" },
+    { name="var_array_values", dir="types" },
   },
 
   blocks = {
--- define the blocks of your package, e.g. a sender and a receiver block
     { name="store_value", file="random_walk_iblock.blx", src_dir="src" },
     { name="modify_value", file="random_walk_cblock.blx", src_dir="src" },
   },
 
-  libraries = {
--- define the libraries. Preferably 1 library per block
-    { name="random_walk_iblock", blocks={"store_value"} },
-    { name="random_walk_cblock", blocks={"modify_value"} },
+  modules = {
+    { name="mod_random_walk_iblock", blocks={"store_value"} },
+    { name="mod_random_walk_cblock", blocks={"modify_value"} },
   },
 }
 ```
@@ -59,58 +48,57 @@ return pkg
 
 ```sh
 ~/projects/microblx/random_walk$ gedit random_walk_cblock.blx
-return block 
+return block
 {
       name="random_walk_cblock",
       meta_data="cblock modifying the random_walk_iblock according to configured distribution",
       port_cache=true,
 
       types = {
-	 { name="vector", class='struct' }, -- Enum will follow once implemented in C
-	 { name="distribution", class='struct' },
+	 { name="var_array_values", class='struct' }, -- Enum will follow once implemented in C
+	 { name="distribution_name", class='struct' },
       },
 
       configurations= {
-	 { name="distribution", type_name="double", len=5 },
+	 { name="distribution", type_name="struct distribution_name", len=1 },
       },
 
       ports = {
-	 { name="change", out_type_name="vector", out_data_len=1, doc="change of the value of the random walk" },
+	 { name="change", out_type_name="struct var_array_values", out_data_len=1, in_type_name="struct var_array_values", in_data_len=1, doc="change of the value of the random walk" },
       },
       
       operations = { start=true, stop=true, step=true },
 
-      cpp = true
+      cpp = false
 }
 
 ~/projects/microblx/random_walk$ gedit random_walk_iblock.blx
-return block 
+return iblock 
 {
       name="random_walk_iblock",
       meta_data="storing the value of the random walk",
       port_cache=true,
 
       types = {
-	 { name="vector", class='struct' }, -- Enum will follow once implemented in C
-	 { name="value", class='struct' }
+	 { name="var_array_values", class='struct' },
       },
 
       configurations= {
-	 { name="init_value", type_name="value", len=1 },
+	 { name="init_value", type_name="struct var_array_values", len=1 },
       },
 
       ports = {
-	 { name="change", in_type_name="vector", in_data_len=1, doc="change of the stored value" },
-	 { name="value", out_type_name="value", doc="current value of the random walk" },
+	 { name="new_value", in_type_name="struct var_array_values", in_data_len=1, doc="update of the stored value" },
+	 { name="stored_value", out_type_name="struct var_array_values", doc="current value of the random walk" },
       },
       
-      operations = { start=true, stop=true, step=false },
+      operations = { read=true, write=true },
 
-      cpp = true
+      cpp = false
 }
 ```
 
-Note: the flag "cpp = true" is used to generate .cpp and .hpp files instead of .c and .h files.
+**The rest of this document is still under construction**
 
 ### Generate the package!
 ```sh
