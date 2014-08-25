@@ -5,10 +5,16 @@
 #ignore temporary files 
 *.*~
 
+#ignore temporary files 
+*.hexarr
+
 #the wiki lives in its own (sub)repository and is managed there
 /wiki
 
 #ignore all the cmake stuff because it can be recrated with the lua scripts
 */CMakeLists.txt
+CMakeLists.txt
 */build/*
+/build
 */cmake/*
+/cmake

@@ -98,24 +98,22 @@ return iblock
 }
 ```
 
-**The rest of this document is still under construction**
-
 ### Generate the package!
 ```sh
-~/projects/microblx/random_walk$ ./generate_pkg.lua -force -s random_walk.pkg
+$ ./generate_pkg.lua -s random_walk.pkg
 missing output directory (-d), using default from model
-    generating ..//random_walk/src/random_walk_iblock.hpp
-    generating ..//random_walk/src/random_walk_iblock.cpp
+    generating ..//random_walk/src/random_walk_iblock.h
+    generating ..//random_walk/src/random_walk_iblock.c
     generating ..//random_walk/src/random_walk_iblock.usc
-    generating ..//random_walk/src/random_walk_cblock.hpp
-    generating ..//random_walk/src/random_walk_cblock.cpp
+    generating ..//random_walk/src/random_walk_cblock.h
+    generating ..//random_walk/src/random_walk_cblock.c
     generating ..//random_walk/src/random_walk_cblock.usc
+    generating ..//random_walk/modules/mod_random_walk_iblock_module.h
+    generating ..//random_walk/modules/mod_random_walk_iblock_module.c
+    generating ..//random_walk/modules/mod_random_walk_cblock_module.h
+    generating ..//random_walk/modules/mod_random_walk_cblock_module.c
     export models in ..//random_walk/models
 ```
-
-Note:
-* The -s option tells the script that there is a package description file (here: random_walk.pkg) 
-* If the -d option is omitted, the script will use the directory defined in the model.
 
 Implement ubx types and blocks
 ------------------------------
@@ -124,8 +122,29 @@ In this step you have to fill in the generated stubs for your types and blocks.
 
 
 ### Implement the types
+```sh
+~/projects/microblx/random_walk/types$ gedit distribution_name.h
+/* generated type stub, extend this struct with real information */
 
+struct distribution_name {
 
+    char model[20]; // This should be a URL to the data model
+    char uid[20]; // This should be a unique id to identify this data type
+    char meta_model[20]; // This should be a URL to the meta model
+    char dirstr_name[20]; // the actually data. In our example, the name of the distribution
+};
+
+~/projects/microblx/random_walk/types$ gedit var_array_values.h
+struct var_array_values {
+    char model[20]; // This should be a URL to the data model
+    char uid[20]; // This should be a unique id to identify this data type
+    char meta_model[20]; // This should be a URL to the meta model
+    int value_arr_len; // the length of the array containing the values
+    float *value_arr; // pointer to the actual data
+};
+```
+
+**The rest of this document is still under construction**
 
 ### Implement the blocks
 

@@ -14,7 +14,7 @@ return block
       },
 
       ports = {
-	 { name="change", out_type_name="struct var_array_values", out_data_len=1, in_type_name="struct var_array_values", in_data_len=1, doc="change of the value of the random walk" },
+	 { name="new_value", out_type_name="struct var_array_values", out_data_len=1, in_type_name="struct var_array_values", in_data_len=1, doc="change of the value of the random walk" },
       },
       
       operations = { start=true, stop=true, step=true },
