@@ -5,7 +5,7 @@
 #ignore temporary files 
 *.*~
 
-#ignore temporary files 
+#ignore hex files
 *.hexarr
 
 #the wiki lives in its own (sub)repository and is managed there

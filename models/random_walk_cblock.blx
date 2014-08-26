@@ -1,0 +1,23 @@
+return block 
+{
+      name="random_walk_cblock",
+      meta_data="cblock modifying the random_walk_iblock according to configured distribution",
+      port_cache=true,
+
+      types = {
+	 { name="var_array_values", class='struct' }, -- Enum will follow once implemented in C
+	 { name="distribution_name", class='struct' },
+      },
+
+      configurations= {
+	 { name="distribution", type_name="struct distribution_name", len=1 },
+      },
+
+      ports = {
+	 { name="new_value", out_type_name="struct var_array_values", out_data_len=1, in_type_name="struct var_array_values", in_data_len=1, doc="change of the value of the random walk" },
+      },
+      
+      operations = { start=true, stop=true, step=true },
+
+      cpp = false
+}
