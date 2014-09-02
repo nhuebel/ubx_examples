@@ -5,7 +5,7 @@ return block
       port_cache=true,
 
       types = {
-	 { name="var_array_values", class='struct' }, -- Enum will follow once implemented in C
+	 { name="var_array_values", class='struct' },
 	 { name="distribution_name", class='struct' },
       },
 

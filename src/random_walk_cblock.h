@@ -45,10 +45,31 @@ static void update_port_cache(ubx_block_t *b, struct random_walk_cblock_port_cac
         pc->new_value = ubx_port_get(b, "new_value");
 }
 
+int read_port(ubx_port_t *p,const char *type_name, void* data){
+	if(p==NULL) { ERR("port is NULL"); return -1; }
+	if(type_name==NULL) { ERR("type_name is NULL"); return -1; }
+	ubx_node_info_t* ni = p->block->ni;
+	assert(ni!=NULL);
+	ubx_type_t *tcheck;
+	if((tcheck= ubx_type_get(ni, type_name))==NULL) { ERR("type %s is not known",type_name); return -1; }
 
-/* for each port type, declare convenience functions to read/write from ports */
-def_read_fun(read_new_value, struct var_array_values);
-def_write_fun(write_new_value,struct var_array_values);
+	///TODO: which of the checks do make sense and which info should the function get?
+    if (tcheck != p->in_type) {
+            ERR("port %s type error during read: is '%s' but should be '%s'",
+                p->name, type_name, p->in_type_name);
+            return -1;
+    }
+    ubx_data_t val;
+	val.type = p->in_type;
+	val.data = data;
+	val.len = 1;
+	return __port_read(p, &val);
+}
+
+
+
+
+
 
 /* block operation forward declarations */
 int random_walk_cblock_init(ubx_block_t *b);

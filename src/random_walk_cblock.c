@@ -8,6 +8,7 @@ struct random_walk_cblock_info
 {
         /* add custom block local data here */
 		struct distribution_name distribution_data;
+		size_t arr_length;
 
         /* this is to have fast access to ports for reading and writing, without
          * needing a hash table lookup */
@@ -39,15 +40,14 @@ int random_walk_cblock_start(ubx_block_t *b)
         struct random_walk_cblock_info *inf = (struct random_walk_cblock_info*) b->private_data;
 
         //get and store configuration data
-//        unsigned int clen;
-//        struct distribution_name* distribution_data= (struct distribution_name*) ubx_config_get_data_ptr(b, "distribution", &clen);
-        struct distribution_name* distribution_data=(struct distribution_name*)ubx_config_get_data(b,"distribution");
+        unsigned int clen;
+        struct distribution_name* distribution_data= (struct distribution_name*) ubx_config_get_data_ptr(b, "distribution", &clen);
+//        struct distribution_name* distribution_data=(struct distribution_name*)ubx_config_get_data(b,"distribution");
         inf->distribution_data = *distribution_data;
 
         //initialize random number generator with seed
         srand(inf->distribution_data.seed);
-
-        ///TODO: read length of the value-port and allocate memory
+        DBG("received distribution - name: '%s'; seed: %d",distribution_data->dirstr_name,distribution_data->seed);
 
         int ret = 0;
         return ret;
@@ -68,22 +68,44 @@ void random_walk_cblock_cleanup(ubx_block_t *b)
 /* step */
 void random_walk_cblock_step(ubx_block_t *b)
 {
-		int rand_val;
+		uint32_t ret=0;
         struct random_walk_cblock_info *inf = (struct random_walk_cblock_info*) b->private_data;
 
         //read value from port
-        struct var_array_values dat;
-        read_new_value(inf->ports.new_value,&dat);
-        //do 'random' stuff
-        int i;
-        for (i=0;i<dat.value_arr_len;i++)
-        {
-        	//creates a random value between +-max_step_size
-        	dat.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0,5);
+        ubx_port_t* in_port = ubx_port_get(b,"new_value");
+        struct var_array_values data;
+        if((ret = read_port(in_port,"struct var_array_values",&data))!=0){
+        	ERR("error when trying to read port %s",in_port->name);
+        	return;
         }
-        DBG(dat);
-        ///TODO: implement different distributions
-        //write value to port
-        write_new_value(inf->ports.new_value,&dat);
+        int i;
+        for(i=0;i<data.value_arr_len;i++){
+        	MSG("value_arr[%d] = %f",i,data.value_arr[i]);
+        }
+
+
+
+//        ubx_data_t* data;
+//        data->type=inf->ports.new_value->in_type;
+//        data->data=&dat;
+//        data->len=1;
+//        __port_read(inf->ports.new_value,data);
+//        MSG("data length: %d",dat.value_arr_len);
+
+//        MSG("read them successfully; start doing 'random' stuff");
+//        //do 'random' stuff
+//        int i;
+//        for (i=0;i<dat.value_arr_len;i++)
+//        {
+//        	//creates a random value between +-max_step_size
+//        	dat.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0,5);
+//        	MSG("new value if %d th element: %f",i,dat.value_arr[i]);
+//        }
+//        MSG("done going to write port");
+//
+//        ///TODO: implement different distributions
+//        //write value to port
+//        //write_new_value(inf->ports.new_value,&dat);
+//        MSG("port succesfully updated");
 }
 

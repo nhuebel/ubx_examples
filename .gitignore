@@ -2,8 +2,9 @@
 .cproject
 .project
 
-#ignore temporary files 
+#ignore temporary files and kate swap files
 *.*~
+*.kate-swp
 
 #ignore hex files
 *.hexarr

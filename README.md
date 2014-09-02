@@ -185,7 +185,12 @@ static void random_walk_iblock_write(ubx_block_t *i, ubx_data_t* msg);
 ```
 
 ### Build with CMAKE
-
+```sh
+$ mkdir build && cd build/
+$ cmake .. -DCMAKE_INSTALL_PREFIX=/home/nhuebel/projects/microblx/microblx/install/
+$ make
+```
+Check your install path with `ccmake` to see cmake settings if something goes wrong. Installation path is the path to your microblx/install/... folder.
 
 Running the example
 -------------------
