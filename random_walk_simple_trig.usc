@@ -19,8 +19,9 @@ return bd.system {
    },
    
    connections = {
-      {src="rw_cblock1.new_value", tgt="rw_cblock1.new_value"},
-      --{src="rw_iblock1", tgt="rw_cblock1.new_value"},
+      --{src="rw_cblock1.new_value", tgt="rw_cblock1.new_value"},
+      {src="rw_cblock1.new_value", tgt="rw_iblock1"},
+      {src="rw_iblock1", tgt="rw_cblock1.new_value"},
    },
    
    configurations = {

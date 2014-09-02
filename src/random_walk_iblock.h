@@ -25,7 +25,7 @@ ubx_config_t random_walk_iblock_config[] = {
 ubx_port_t random_walk_iblock_ports[] = {
         { .name="new_value", .in_type_name="struct var_array_values", .in_data_len=1, .doc="update of the stored value"  },
         { .name="stored_value", .out_type_name="struct var_array_values", .out_data_len=1, .doc="current value of the random walk"  },
-        { NULL },
+		{ NULL },
 };
 
 /* declare a struct port_cache */
@@ -53,8 +53,8 @@ def_write_fun(write_stored_value, struct var_array_values)
 /* block operation forward declarations */
 int random_walk_iblock_init(ubx_block_t *b);
 void random_walk_iblock_cleanup(ubx_block_t *b);
-static int random_walk_iblock_read(ubx_block_t *i, ubx_data_t* msg);
-static void random_walk_iblock_write(ubx_block_t *i, ubx_data_t* msg);
+int random_walk_iblock_read(ubx_block_t *b, ubx_data_t* msg);
+void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg);
 
 
 /* put everything together */
