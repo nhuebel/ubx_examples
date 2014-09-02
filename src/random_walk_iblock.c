@@ -91,7 +91,7 @@ int random_walk_iblock_read(ubx_block_t *b, ubx_data_t* msg)
 	}
 
 	if((memcpy(msg->data,&(inf->current_value),sizeof(inf->current_value)))==NULL){
-		ERR("Error when copying data from port %s",inf->ports.new_value->name);
+		ERR("Error when reading data from port %s",inf->ports.new_value->name);
 		goto out;
 	}
 	ret=1;
@@ -102,5 +102,20 @@ out:
 /* write */
 void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg)
 {
+	struct random_walk_iblock_info *inf;
+	inf = (struct random_walk_iblock_info*) b->private_data;
+
+	if(inf->type!=msg->type){
+		ERR("port %s expects data of type %s but has received data of type %s",inf->ports.new_value->name,inf->ports.new_value->in_type_name,msg->type->name);
+		return;
+	}
+	if(msg->len!=1){
+		ERR("Expected msg of length 1, but received len %lu", msg->len);
+		return;
+	}
+	if((memcpy(&(inf->current_value),msg->data,sizeof(inf->current_value)))==NULL){
+		ERR("Error when writing data to port %s",inf->ports.new_value->name);
+		return;
+	}
 
 }
