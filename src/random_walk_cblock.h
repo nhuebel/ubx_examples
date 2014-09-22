@@ -45,8 +45,10 @@ static void update_port_cache(ubx_block_t *b, struct random_walk_cblock_port_cac
         pc->new_value = ubx_port_get(b, "new_value");
 }
 
+///TODO: should be auto-generated or move to core; if auto-gen, then use data type instead of void pointer
 int read_port(ubx_port_t *p,const char *type_name, void* data){
 	if(p==NULL) { ERR("port is NULL"); return -1; }
+	///TODO: check if p is inport
 	if(type_name==NULL) { ERR("type_name is NULL"); return -1; }
 	ubx_node_info_t* ni = p->block->ni;
 	assert(ni!=NULL);
@@ -67,6 +69,31 @@ int read_port(ubx_port_t *p,const char *type_name, void* data){
 }
 
 
+
+int write_port(ubx_port_t* p, const char *type_name, void* data)
+{
+	if(p==NULL) { ERR("port is NULL"); return -1; }
+	///TODO: check if p is outport
+	if(type_name==NULL) { ERR("type_name is NULL"); return -1; }
+	ubx_node_info_t* ni = p->block->ni;
+	assert(ni!=NULL);
+	ubx_type_t *tcheck;
+	if((tcheck= ubx_type_get(ni, type_name))==NULL) { ERR("type %s is not known",type_name); return -1; }
+
+	///TODO: which of the checks do make sense and which info should the function get?
+ 	if (tcheck != p->out_type) {
+ 		ERR("port %s type error during write: is '%s' but should be '%s'", p->name, type_name, p->in_type_name);
+ 		return -1;
+ 	}
+
+ 	ubx_data_t val;
+ 	val.data = data;
+ 	val.type = p->out_type;
+ 	val.len=1;
+ 	///TODO: shouldn't we check if writing was successful?
+ 	__port_write(p, &val);
+ 	return 0;
+}
 
 
 

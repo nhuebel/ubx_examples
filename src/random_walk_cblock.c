@@ -8,7 +8,6 @@ struct random_walk_cblock_info
 {
         /* add custom block local data here */
 		struct distribution_name distribution_data;
-		size_t arr_length;
 
         /* this is to have fast access to ports for reading and writing, without
          * needing a hash table lookup */
@@ -28,7 +27,7 @@ int random_walk_cblock_init(ubx_block_t *b)
                 goto out;
         }
         b->private_data=inf;
-        update_port_cache(b, &inf->ports);
+        //update_port_cache(b, &inf->ports);
         ret=0;
 out:
         return ret;
@@ -68,44 +67,35 @@ void random_walk_cblock_cleanup(ubx_block_t *b)
 /* step */
 void random_walk_cblock_step(ubx_block_t *b)
 {
+		int i;
 		uint32_t ret=0;
         struct random_walk_cblock_info *inf = (struct random_walk_cblock_info*) b->private_data;
 
         //read value from port
         ubx_port_t* in_port = ubx_port_get(b,"new_value");
         struct var_array_values data;
-        if((ret = read_port(in_port,"struct var_array_values",&data))!=0){
+        if((ret = read_port(in_port,"struct var_array_values",&data))!=1){
         	ERR("error when trying to read port %s",in_port->name);
         	return;
         }
-        int i;
-        for(i=0;i<data.value_arr_len;i++){
-        	MSG("value_arr[%d] = %f",i,data.value_arr[i]);
+//        for(i=0;i<data.value_arr_len;i++){
+//        	MSG("value_arr[%d] = %f",i,data.value_arr[i]);
+//        }
+
+        //do 'random' stuff
+        ///TODO: implement different distributions
+        for (i=0;i<data.value_arr_len;i++)
+        {
+        	//creates a random value between +-max_step_size
+        	data.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0.5);
+        	DBG("new value if %d th element: %f",i,data.value_arr[i]);
         }
 
+        //write data to port
+        ubx_port_t* out_port = ubx_port_get(b,"new_value");
+        write_port(out_port,"struct var_array_values",&data);
 
-
-//        ubx_data_t* data;
-//        data->type=inf->ports.new_value->in_type;
-//        data->data=&dat;
-//        data->len=1;
-//        __port_read(inf->ports.new_value,data);
-//        MSG("data length: %d",dat.value_arr_len);
-
-//        MSG("read them successfully; start doing 'random' stuff");
-//        //do 'random' stuff
-//        int i;
-//        for (i=0;i<dat.value_arr_len;i++)
-//        {
-//        	//creates a random value between +-max_step_size
-//        	dat.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0,5);
-//        	MSG("new value if %d th element: %f",i,dat.value_arr[i]);
-//        }
-//        MSG("done going to write port");
-//
-//        ///TODO: implement different distributions
-//        //write value to port
-//        //write_new_value(inf->ports.new_value,&dat);
-//        MSG("port succesfully updated");
+        //free the data that was assigned during the read_port call
+        free(data.value_arr);
 }
 

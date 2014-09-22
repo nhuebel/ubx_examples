@@ -25,7 +25,7 @@ return bd.system {
    },
    
    configurations = {
-      { name="rw_cblock1", config={distribution={model="random_walk",uid="rw_cblock1",meta_model="dummy_ont",dirstr_name="none",seed=0,max_step_size=1}}},
+      { name="rw_cblock1", config={distribution={model="random_walk",uid="rw_cblock1",meta_model="dummy_ont",dirstr_name="test",seed=0,max_step_size=0.1}}},
       { name="rw_iblock1", config={init_value=init_value_arr}},
       { name="ptrig1", config={ period={sec=1,usec=0}, 
                                 trig_blocks={ {b="#rw_cblock1", num_steps=1, measure=0} } } }
