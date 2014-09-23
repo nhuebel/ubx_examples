@@ -117,9 +117,9 @@ void random_walk_cblock_step(ubx_block_t *b)
 
         	__get_data_ptr(port,&val);
         	struct var_array_values *data = (struct var_array_values*) val.data;
-			for(i=0;i<data->value_arr_len;i++){
-				MSG("value_arr[%d] = %f",i,data->value_arr[i]);
-			}
+//			for(i=0;i<data->value_arr_len;i++){
+//				MSG("value_arr[%d] = %f",i,data->value_arr[i]);
+//			}
 			create_random_values(&(inf->distribution_data),data);
 
         }

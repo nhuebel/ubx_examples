@@ -11,6 +11,7 @@ return block
 
       configurations= {
 	 { name="distribution", type_name="struct distribution_name", len=1 },
+	 { name="datacopy", type_name="short", len=1 },
       },
 
       ports = {
