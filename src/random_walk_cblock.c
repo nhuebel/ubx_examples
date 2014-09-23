@@ -90,13 +90,7 @@ void random_walk_cblock_step(ubx_block_t *b)
 	//        }
 
 			//do 'random' stuff
-			///TODO: implement different distributions
-			for (i=0;i<data.value_arr_len;i++)
-			{
-				//creates a random value between +-max_step_size
-				data.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0.5);
-				DBG("new value if %d th element: %f",i,data.value_arr[i]);
-			}
+			create_random_values(&(inf->distribution_data),&data);
 
 			//write data to port
 			ubx_port_t* out_port = ubx_port_get(b,"new_value");
@@ -118,23 +112,26 @@ void random_walk_cblock_step(ubx_block_t *b)
         	if((tcheck= ubx_type_get(ni, "struct var_array_values"))==NULL) { ERR("type %s is not known","struct var_array_values"); return; }
 
             ubx_data_t val;
-            struct var_array_values *data;
             val.type = port->out_type;
-        	val.data = data;
         	val.len = 1;
 
-        	///CONTINUE: getdata not found by core?
-        	for(iaptr=port->in_interaction; *iaptr!=NULL; iaptr++) {
-        		if((*iaptr)->block_state==BLOCK_STATE_ACTIVE) {
-        			MSG("block name: %s",(*iaptr)->name);
-        			(*iaptr)->getdata(*iaptr, &val);
-        			MSG("block name: %s",(*iaptr)->name);
-//        			if((ret=(*iaptr)->getdata(*iaptr, &val)) > 0) {
-//        				port->stat_reades++;
-//        				(*iaptr)->stat_num_reads++;
-//        			}
-        		}
-        	}
+        	__get_data_ptr(port,&val);
+        	struct var_array_values *data = (struct var_array_values*) val.data;
+			for(i=0;i<data->value_arr_len;i++){
+				MSG("value_arr[%d] = %f",i,data->value_arr[i]);
+			}
+			create_random_values(&(inf->distribution_data),data);
+
         }
 }
 
+void create_random_values(struct distribution_name *distr, struct var_array_values *data){
+	///TODO: implement different distributions
+	int i;
+	for (i=0;i<data->value_arr_len;i++)
+	{
+		//creates a random value between +-max_step_size
+		data->value_arr[i]+=2*distr->max_step_size*((float)rand()/(float)RAND_MAX-0.5);
+		MSG("new value if %d th element: %f",i,data->value_arr[i]);
+	}
+}

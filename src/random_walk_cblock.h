@@ -106,6 +106,8 @@ void random_walk_cblock_stop(ubx_block_t *b);
 void random_walk_cblock_cleanup(ubx_block_t *b);
 void random_walk_cblock_step(ubx_block_t *b);
 
+/* helper function */
+void create_random_values(struct distribution_name *distr, struct var_array_values *data);
 
 /* put everything together */
 ubx_block_t random_walk_cblock_block = {

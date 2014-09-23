@@ -152,7 +152,6 @@ void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg) {
 
 /* get the pointer to the data */
 void get_data_pointer(ubx_block_t *b, ubx_data_t* msg) {
-	MSG("been here");
 	struct random_walk_iblock_info *inf;
 	inf = (struct random_walk_iblock_info*) b->private_data;
 
