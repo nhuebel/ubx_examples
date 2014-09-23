@@ -148,10 +148,18 @@ void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg) {
 		ERR("Error when writing data to port %s", inf->ports.new_value->name);
 		return;
 	}
-
 }
 
 /* get the pointer to the data */
-int get_data_pointer(ubx_block_t *b, ubx_data_t* msg) {
-	return 0;
+void get_data_pointer(ubx_block_t *b, ubx_data_t* msg) {
+	MSG("been here");
+	struct random_walk_iblock_info *inf;
+	inf = (struct random_walk_iblock_info*) b->private_data;
+
+	if (inf->type != msg->type) {
+		ERR("port %s expects data of type %s but has received data of type %s",	inf->ports.new_value->name, inf->ports.new_value->in_type_name, msg->type->name);
+		return;
+	}
+	msg->data = &(inf->current_value);
+	return;
 }

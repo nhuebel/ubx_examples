@@ -20,7 +20,8 @@ char random_walk_cblock_meta[] =
 
 /* declaration of block configuration */
 ubx_config_t random_walk_cblock_config[] = {
-        { .name="distribution", .type_name = "struct distribution_name", .doc="" },
+        { .name="distribution", .type_name = "struct distribution_name", .doc="info about the distribution" },
+        { .name="datacopy", .type_name = "short", .doc="switches between copying data from/to iblock or passing the pointer" },
         { NULL },
 };
 

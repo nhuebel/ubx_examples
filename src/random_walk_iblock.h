@@ -55,7 +55,7 @@ int random_walk_iblock_init(ubx_block_t *b);
 void random_walk_iblock_cleanup(ubx_block_t *b);
 int random_walk_iblock_read(ubx_block_t *b, ubx_data_t* msg);
 void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg);
-int get_data_pointer(ubx_block_t *b, ubx_data_t* msg);
+void get_data_pointer(ubx_block_t *b, ubx_data_t* msg);
 
 
 /* put everything together */
@@ -78,7 +78,7 @@ ubx_block_t random_walk_iblock_block = {
 /* random_walk_iblock module init and cleanup functions */
 int random_walk_iblock_mod_init(ubx_node_info_t* ni)
 {
-        DBG(" ");
+        DBG(" been here ");
         int ret = -1;
 
         if(ubx_block_register(ni, &random_walk_iblock_block) != 0)

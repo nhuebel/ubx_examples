@@ -8,6 +8,7 @@ struct random_walk_cblock_info
 {
         /* add custom block local data here */
 		struct distribution_name distribution_data;
+		short datacpy;
 
         /* this is to have fast access to ports for reading and writing, without
          * needing a hash table lookup */
@@ -26,8 +27,11 @@ int random_walk_cblock_init(ubx_block_t *b)
                 ret=EOUTOFMEM;
                 goto out;
         }
+        unsigned int clen;
+        inf->datacpy = *(short*) ubx_config_get_data_ptr(b, "datacopy", &clen);
+
         b->private_data=inf;
-        //update_port_cache(b, &inf->ports);
+        update_port_cache(b, &inf->ports);
         ret=0;
 out:
         return ret;
@@ -71,31 +75,66 @@ void random_walk_cblock_step(ubx_block_t *b)
 		uint32_t ret=0;
         struct random_walk_cblock_info *inf = (struct random_walk_cblock_info*) b->private_data;
 
-        //read value from port
-        ubx_port_t* in_port = ubx_port_get(b,"new_value");
-        struct var_array_values data;
-        if((ret = read_port(in_port,"struct var_array_values",&data))!=1){
-        	ERR("error when trying to read port %s",in_port->name);
-        	return;
-        }
-//        for(i=0;i<data.value_arr_len;i++){
-//        	MSG("value_arr[%d] = %f",i,data.value_arr[i]);
-//        }
-
-        //do 'random' stuff
-        ///TODO: implement different distributions
-        for (i=0;i<data.value_arr_len;i++)
+        if (inf->datacpy)
         {
-        	//creates a random value between +-max_step_size
-        	data.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0.5);
-        	DBG("new value if %d th element: %f",i,data.value_arr[i]);
+        	MSG("connection using memcpy");
+			//read value from port
+			ubx_port_t* in_port = ubx_port_get(b,"new_value");
+			struct var_array_values data;
+			if((ret = read_port(in_port,"struct var_array_values",&data))!=1){
+				ERR("error when trying to read port %s",in_port->name);
+				return;
+			}
+	//        for(i=0;i<data.value_arr_len;i++){
+	//        	MSG("value_arr[%d] = %f",i,data.value_arr[i]);
+	//        }
+
+			//do 'random' stuff
+			///TODO: implement different distributions
+			for (i=0;i<data.value_arr_len;i++)
+			{
+				//creates a random value between +-max_step_size
+				data.value_arr[i]+=2*inf->distribution_data.max_step_size*((float)rand()/(float)RAND_MAX-0.5);
+				DBG("new value if %d th element: %f",i,data.value_arr[i]);
+			}
+
+			//write data to port
+			ubx_port_t* out_port = ubx_port_get(b,"new_value");
+			write_port(out_port,"struct var_array_values",&data);
+
+			//free the data that was assigned during the read_port call
+			free(data.value_arr);
+        }else
+        {
+        	MSG("connection using pointer");
+        	//get pointer to data
+        	ubx_block_t **iaptr;
+        	ubx_port_t* port = ubx_port_get(b,"new_value");
+        	///TODO: which checks are necessary?
+        	if(port==NULL) { ERR("port is NULL"); return; }
+        	ubx_node_info_t* ni = b->ni;
+        	assert(ni!=NULL);
+        	ubx_type_t *tcheck;
+        	if((tcheck= ubx_type_get(ni, "struct var_array_values"))==NULL) { ERR("type %s is not known","struct var_array_values"); return; }
+
+            ubx_data_t val;
+            struct var_array_values *data;
+            val.type = port->out_type;
+        	val.data = data;
+        	val.len = 1;
+
+        	///CONTINUE: getdata not found by core?
+        	for(iaptr=port->in_interaction; *iaptr!=NULL; iaptr++) {
+        		if((*iaptr)->block_state==BLOCK_STATE_ACTIVE) {
+        			MSG("block name: %s",(*iaptr)->name);
+        			(*iaptr)->getdata(*iaptr, &val);
+        			MSG("block name: %s",(*iaptr)->name);
+//        			if((ret=(*iaptr)->getdata(*iaptr, &val)) > 0) {
+//        				port->stat_reades++;
+//        				(*iaptr)->stat_num_reads++;
+//        			}
+        		}
+        	}
         }
-
-        //write data to port
-        ubx_port_t* out_port = ubx_port_get(b,"new_value");
-        write_port(out_port,"struct var_array_values",&data);
-
-        //free the data that was assigned during the read_port call
-        free(data.value_arr);
 }
 
