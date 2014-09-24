@@ -1,0 +1,20 @@
+return pkg
+{
+  name="ubx_random_walk",
+  path="../",
+
+  types = {
+    { name="distribution_name", dir="types" },
+    { name="var_array_values", dir="types" },
+  },
+
+  blocks = {
+    { name="random_walk_iblock", file="random_walk_iblock.blx", src_dir="src" },
+    { name="random_walk_cblock", file="random_walk_cblock.blx", src_dir="src" },
+  },
+
+  modules = {
+    { name="mod_random_walk_iblock", blocks={"random_walk_iblock"} },
+    { name="mod_random_walk_cblock", blocks={"random_walk_cblock"} },
+  },
+}

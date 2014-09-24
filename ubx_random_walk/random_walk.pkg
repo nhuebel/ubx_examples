@@ -1,7 +1,7 @@
 return pkg
 {
-  name="random_walk",
-  path="../",
+  name="ubx_random_walk",
+  path="",
 
   types = {
     { name="distribution_name", dir="types" },

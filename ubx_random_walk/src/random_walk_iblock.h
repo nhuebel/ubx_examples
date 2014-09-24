@@ -25,7 +25,7 @@ ubx_config_t random_walk_iblock_config[] = {
 ubx_port_t random_walk_iblock_ports[] = {
         { .name="new_value", .in_type_name="struct var_array_values", .in_data_len=1, .doc="update of the stored value"  },
         { .name="stored_value", .out_type_name="struct var_array_values", .out_data_len=1, .doc="current value of the random walk"  },
-		{ NULL },
+        { NULL },
 };
 
 /* declare a struct port_cache */
@@ -47,21 +47,18 @@ static void update_port_cache(ubx_block_t *b, struct random_walk_iblock_port_cac
 
 
 /* for each port type, declare convenience functions to read/write from ports */
-//def_read_fun(read_new_value, struct var_array_values)
-//def_write_fun(write_stored_value, struct var_array_values)
+def_read_fun(read_new_value, struct var_array_values)
+def_write_fun(write_stored_value, struct var_array_values)
 
 /* block operation forward declarations */
 int random_walk_iblock_init(ubx_block_t *b);
 void random_walk_iblock_cleanup(ubx_block_t *b);
-int random_walk_iblock_read(ubx_block_t *b, ubx_data_t* msg);
-void random_walk_iblock_write(ubx_block_t *b, ubx_data_t* msg);
-void get_data_pointer(ubx_block_t *b, ubx_data_t* msg);
 
 
 /* put everything together */
 ubx_block_t random_walk_iblock_block = {
         .name = "random_walk_iblock",
-        .type = BLOCK_TYPE_INTERACTION,
+        .type = BLOCK_TYPE_COMPUTATION,
         .meta_data = random_walk_iblock_meta,
         .configs = random_walk_iblock_config,
         .ports = random_walk_iblock_ports,
@@ -69,16 +66,13 @@ ubx_block_t random_walk_iblock_block = {
         /* ops */
         .init = random_walk_iblock_init,
         .cleanup = random_walk_iblock_cleanup,
-        .write = random_walk_iblock_write,
-        .read= random_walk_iblock_read,
-        .getdata = get_data_pointer,
 };
 
 
 /* random_walk_iblock module init and cleanup functions */
 int random_walk_iblock_mod_init(ubx_node_info_t* ni)
 {
-        DBG(" been here ");
+        DBG(" ");
         int ret = -1;
 
         if(ubx_block_register(ni, &random_walk_iblock_block) != 0)

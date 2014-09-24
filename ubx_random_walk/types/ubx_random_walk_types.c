@@ -1,4 +1,4 @@
-/* generated type file source library for random_walk */
+/* generated type file source library for ubx_random_walk */
 
 #include <stdint.h>
 #include <ubx.h>
