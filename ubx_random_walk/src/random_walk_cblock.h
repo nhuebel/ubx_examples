@@ -3,6 +3,7 @@
  */
 
 #include <ubx.h>
+#include <stdlib.h>
 
 /* includes types and type metadata */
 #include "../types/var_array_values.h"
@@ -13,15 +14,15 @@
 
 /* block meta information */
 char random_walk_cblock_meta[] =
-        " { doc='',"
+        " { doc='ubx random walk block',"
         "   real-time=true,"
         "}";
 
 /* declaration of block configuration */
 ubx_config_t random_walk_cblock_config[] = {
-        { .name="distribution", .type_name = "struct distribution_name", .doc="" },
-        { .name="datacopy", .type_name = "short", .doc="" },
-        { NULL },
+		{ .name="distribution", .type_name = "struct distribution_name", .doc="info about the distribution" },
+		{ .name="datacopy", .type_name = "short", .doc="switches between copying data from/to iblock or passing the pointer" },
+		{ NULL },
 };
 
 /* declaration port block ports */
@@ -46,8 +47,52 @@ static void update_port_cache(ubx_block_t *b, struct random_walk_cblock_port_cac
 }
 
 
-/* for each port type, declare convenience functions to read/write from ports */
-def_read_fun(read_new_value, struct var_array_values)
+///TODO: should be auto-generated or move to core; if auto-gen, then use data type instead of void pointer
+int read_port(ubx_port_t *p,const char *type_name, void* data){
+	if(p==NULL) { ERR("port is NULL"); return -1; }
+	///TODO: check if p is inport
+	if(type_name==NULL) { ERR("type_name is NULL"); return -1; }
+	ubx_node_info_t* ni = p->block->ni;
+	assert(ni!=NULL);
+	ubx_type_t *tcheck;
+	if((tcheck= ubx_type_get(ni, type_name))==NULL) { ERR("type %s is not known",type_name); return -1; }
+	///TODO: which of the checks do make sense and which info should the function get?
+	if (tcheck != p->in_type) {
+		ERR("port %s type error during read: is '%s' but should be '%s'",
+				p->name, type_name, p->in_type_name);
+		return -1;
+	}
+	ubx_data_t val;
+	val.type = p->in_type;
+	val.data = data;
+	val.len = 1;
+	return __port_read(p, &val);
+}
+
+
+int write_port(ubx_port_t* p, const char *type_name, void* data)
+{
+	if(p==NULL) { ERR("port is NULL"); return -1; }
+	///TODO: check if p is outport
+	if(type_name==NULL) { ERR("type_name is NULL"); return -1; }
+	ubx_node_info_t* ni = p->block->ni;
+	assert(ni!=NULL);
+	ubx_type_t *tcheck;
+
+	if((tcheck= ubx_type_get(ni, type_name))==NULL) { ERR("type %s is not known",type_name); return -1; }
+	///TODO: which of the checks do make sense and which info should the function get?
+	if (tcheck != p->out_type) {
+		ERR("port %s type error during write: is '%s' but should be '%s'", p->name, type_name, p->in_type_name);
+		return -1;
+	}
+	ubx_data_t val;
+	val.data = data;
+	val.type = p->out_type;
+	val.len=1;
+	///TODO: shouldn't we check if writing was successful?
+	__port_write(p, &val);
+	return 0;
+}
 
 /* block operation forward declarations */
 int random_walk_cblock_init(ubx_block_t *b);
@@ -56,6 +101,8 @@ void random_walk_cblock_stop(ubx_block_t *b);
 void random_walk_cblock_cleanup(ubx_block_t *b);
 void random_walk_cblock_step(ubx_block_t *b);
 
+/* helper function */
+void create_random_values(struct distribution_name *distr, struct var_array_values *data);
 
 /* put everything together */
 ubx_block_t random_walk_cblock_block = {
@@ -72,7 +119,6 @@ ubx_block_t random_walk_cblock_block = {
         .cleanup = random_walk_cblock_cleanup,
         .step = random_walk_cblock_step,
 };
-
 
 /* random_walk_cblock module init and cleanup functions */
 int random_walk_cblock_mod_init(ubx_node_info_t* ni)
