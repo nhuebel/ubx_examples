@@ -1,0 +1,34 @@
+
+init_value_arr=
+{model="random_walk",uid="rw_iblock1",meta_model="dummy_ont",value_arr_len=5,value_arr=ffi.new("float[3]",{1,2,3})} 
+
+return bd.system {
+   imports = {
+      "std_types/stdtypes/stdtypes.so",
+      "std_blocks/ptrig/ptrig.so",
+      "types/random_walk_types.so",
+      "blocks/mod_random_walk_cblock.so",
+      "blocks/mod_random_walk_iblock.so",
+      "std_blocks/lfds_buffers/lfds_cyclic.so",
+   },
+   
+   blocks = {
+      {name="ptrig1", type="std_triggers/ptrig"},
+      {name="rw_iblock1", type="random_walk_iblock"},
+      {name="rw_cblock1", type="random_walk_cblock"},
+   },
+   
+   connections = {
+      --{src="rw_cblock1.new_value", tgt="rw_cblock1.new_value"},
+      {src="rw_cblock1.new_value", tgt="rw_iblock1"},
+      {src="rw_iblock1", tgt="rw_cblock1.new_value"},
+   },
+   
+   configurations = {
+      { name="rw_cblock1", config={distribution={model="random_walk",uid="rw_cblock1",meta_model="dummy_ont",dirstr_name="test",seed=0,max_step_size=0.1}},
+      								datacopy={0}},
+      { name="rw_iblock1", config={init_value=init_value_arr}},
+      { name="ptrig1", config={ period={sec=1,usec=0}, 
+                                trig_blocks={ {b="#rw_cblock1", num_steps=1, measure=0} } } }
+   },
+}

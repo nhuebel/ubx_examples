@@ -27,3 +27,25 @@
 *.i*86
 *.x86_64
 *.hex
+
+#ignoring the eclipse project files
+.cproject
+.project
+
+#ignore temporary files and kate swap files
+*.*~
+*.kate-swp
+
+#ignore hex files
+*.hexarr
+
+#the wiki lives in its own (sub)repository and is managed there
+/wiki
+
+#ignore all the cmake stuff because it can be recrated with the lua scripts
+*/CMakeLists.txt
+CMakeLists.txt
+*/build/*
+/build
+*/cmake/*
+/cmake
