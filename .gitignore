@@ -31,6 +31,7 @@
 #ignoring the eclipse project files
 .cproject
 .project
+*/.settings
 
 #ignore temporary files and kate swap files
 *.*~

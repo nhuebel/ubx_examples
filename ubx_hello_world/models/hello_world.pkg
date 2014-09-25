@@ -1,0 +1,13 @@
+return pkg
+{
+  name="ubx_hello_world",
+  path="../",
+  
+  blocks = {
+    { name="hello", file="hello.blx", src_dir="src" },
+  },
+  
+  modules = {
+    { name="hello", blocks={"hello"} },
+  },
+}

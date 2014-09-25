@@ -1,0 +1,10 @@
+return block
+{
+      name="hello",
+      meta_data="A simple hello world block that tells you when it was called and its configured number.",
+      port_cache=true,
+
+      operations = { start=true, stop=true, step=true },
+
+      cpp = false,
+}

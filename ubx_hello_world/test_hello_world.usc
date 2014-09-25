@@ -1,0 +1,29 @@
+return bd.system {
+   imports = {
+      "std_types/stdtypes/stdtypes.so",
+      "std_blocks/ptrig/ptrig.so",
+      "blocks/hello.so",
+      "std_blocks/lfds_buffers/lfds_cyclic.so",
+   },
+   
+   blocks = {
+      {name="ptrig1", type="std_triggers/ptrig"},
+      {name="hello1", type="hello"},
+      {name="hello2", type="hello"},
+      {name="hello3", type="hello"},
+   },
+   
+--   connections = {
+--      --{src="rw_cblock1.new_value", tgt="rw_cblock1.new_value"},
+--   },
+   
+   configurations = {
+      { name="hello1", config={number=1}},
+      { name="hello2", config={number=2}},
+      { name="hello3", config={number=3}},
+      { name="ptrig1", config={ period={sec=1,usec=0}, 
+                                trig_blocks={ {b="#hello1", num_steps=2, measure=0},
+					      {b="#hello2", num_steps=1, measure=0},
+					      {b="#hello3", num_steps=1, measure=0},} } }
+   },
+}
