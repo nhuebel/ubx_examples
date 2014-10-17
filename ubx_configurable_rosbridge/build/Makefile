@@ -11,16 +11,15 @@ MAKE=make -s
 
 %.h.hexarr: %.h
 	../../tools/file2carr.lua $<
-
 	
-#ROOT_DIR=$(CURDIR)/..
-ROOT_DIR=$(CURDIR)
-INCLUDE_DIR=$(UBX_ROOT)/src
-CMAKE_SOURCE_DIR = /home/nhuebel/projects/microblx/ubx_examples/ubx_configurable_rosbridge/src
-CMAKE_BINARY_DIR =/home/nhuebel/projects/microblx/ubx_examples/ubx_configurable_rosbridge/build
+UBX_INCLUDE_DIR=$(UBX_ROOT)/src
+CMAKE_SOURCE_DIR = ../src
+CMAKE_BINARY_DIR =$(CURDIR)
+# define any directories containing header 
+INCLUDES = -I$(UBX_ROOT)/std_types/stdtypes  -I$(UBX_ROOT)/std_blocks -I${UBX_INCLUDE_DIR}
 
-coordinator.so: $(CMAKE_SOURCE_DIR)/coordinator.c $(INCLUDE_DIR)/ubx.h
-	${CC} -ldl -I$(INCLUDE_DIR) $(CFLAGS) $^ -o $@ $(INCLUDE_DIR)/libubx.so
+coordinator.so: $(CMAKE_SOURCE_DIR)/coordinator.c $(UBX_INCLUDE_DIR)/ubx.h
+	${CC} -ldl ${INCLUDES} $(CFLAGS) $^ -o $@ $(UBX_INCLUDE_DIR)/libubx.so
 
 clean:
-	rm -f coordinator *.o *~ core
+	rm -f *.o *~

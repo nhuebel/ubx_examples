@@ -1,9 +1,9 @@
 /* For now the coordinator is just a main file for calling all other components in the right order. */
 
-#include "ubx.h"
+#include <ubx.h>
 #include <stdlib.h>
-#include "/home/nhuebel/projects/microblx/microblx/std_blocks/ptrig/types/ptrig_period.h"
-#include "/home/nhuebel/projects/microblx/microblx/std_blocks/ptrig/types/ptrig_config.h"
+#include <ptrig/types/ptrig_period.h>
+#include <ptrig/types/ptrig_config.h>
 ///TODO: Find way of getting those struct definitions at runtime
 
 #define WEBIF_PORT	"8888"
@@ -35,8 +35,7 @@ struct composition {
 	int len;
 	struct block_info *blocks;
 };
-///TODO: Only specify composition and then get all infos based on that
-
+///TODO: Only specify composition and then get all infos from knowledge base based on that
 
 int main (int argc, char *argv[], char *envp[])
 {
